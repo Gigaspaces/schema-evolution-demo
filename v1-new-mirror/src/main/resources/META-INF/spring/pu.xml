@@ -37,18 +37,16 @@
         <property name="mongoClientConnector" ref="mongoClientConnector" />
     </bean>
 
-    <bean id="myMongoSpaceTypeSchemaAdapter" class="com.gigaspaces.persistency.qa.MyMongoSpaceTypeSchemaAdapter">
-        <constructor-arg name="typeName" value="DemoUserDocument" />
-    </bean>
+    <bean id="personSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonSchemaAdapter"/>
 
     <bean id="v2SpaceEndpoint"
           class="org.openspaces.persistency.space.GigaSpaceSynchronizationEndpointBeanFactory">
         <property name="targetSpaceName" value="${target.space.name}" />
         <property name="lookupGroups" value="${lookup.groups}" />
         <property name="spaceTypeSchemaAdapters">
-            <util:map map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.gigaspaces.datasource.SpaceTypeSchemaAdapter">
-                <entry key="DemoUserDocument" value-ref="myMongoSpaceTypeSchemaAdapter"/>
-            </util:map>
+            <util:list list-class="java.util.ArrayList" value-type="com.gigaspaces.datasource.SpaceTypeSchemaAdapter">
+                <ref bean="personSchemaAdapter"/>
+            </util:list>
         </property>
     </bean>
 
