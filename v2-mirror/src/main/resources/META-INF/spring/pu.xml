@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:os-core="http://www.openspaces.org/schema/core"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.openspaces.org/schema/core http://www.openspaces.org/schema/core/openspaces-core.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="propertiesConfigurer"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+	<!-- ANNOTATION AND COMPONENT SCAN CONFIGURATION -->
+	<!-- Enable scan for OpenSpaces and Spring components -->
+	<context:component-scan base-package="com.gigaspaces.persistency.qa.model" />
+	<!-- <context:component-scan base-package="com.c123.billbuddy.remoting"
+		/> -->
+
+	<!-- Enables the usage of @GigaSpaceContext annotation based injection. -->
+	<os-core:giga-space-context />
+	<!-- Enables Spring Annotation configuration -->
+	<context:annotation-config />
+	<!-- Enables using @Polling and @Notify annotations -->
+	<!-- <os-events:annotation-support /> -->
+	<!-- Enables using @PreBackup, @PostBackup and other annotations -->
+	<os-core:annotation-support />
+	<!-- Transaction annotation support -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- SPACE CONFIGURATION -->
+	<!-- A bean representing a space (an IJSpace implementation). -->
+	<os-core:space id="space" url="/./v2-space" mirror="true"
+				   schema="persistent" space-data-source="v2SpaceDataSource">
+		<os-core:properties>
+			<props>
+				<prop key="space-config.engine.cache_policy">1</prop>
+				<prop key="cluster-config.cache-loader.central-data-source">true</prop>
+				<prop key="cluster-config.mirror-service.supports-partial-update">true</prop>
+				<prop key="cluster-config.mirror-service.url">
+					jini://*/v2-mirror-service_container/v2-mirror-service
+				</prop>
+			</props>
+		</os-core:properties>
+	</os-core:space>
+
+	<!-- OpenSpaces simplified space API built on top of IJSpace/JavaSpace. -->
+	<os-core:giga-space id="gigaSpace" space="space"
+						tx-manager="transactionManager" />
+
+	<bean id="v2SpaceDataSource"
+		  class="com.gigaspaces.persistency.MongoSpaceDataSourceBeanFactory">
+		<property name="mongoClientConnector" ref="v2MongoClient" />
+	</bean>
+	<!-- Defines a local Jini transaction manager. -->
+	<os-core:distributed-tx-manager id="transactionManager" />
+
+	<bean id="v2MongoClient"
+		  class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
+		<property name="db" value="v2-qa-db" />
+		<property name="config">
+			<bean class="com.mongodb.MongoClient">
+				<constructor-arg value="localhost" type="java.lang.String" />
+				<constructor-arg value="27022" type="int" />
+				<!--<property name="writeConcern" value="ACKNOWLEDGED" />-->
+			</bean>
+		</property>
+	</bean>
+</beans>
