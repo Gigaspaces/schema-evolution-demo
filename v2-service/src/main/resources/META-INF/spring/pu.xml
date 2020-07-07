@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:os-core="http://www.openspaces.org/schema/core"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.openspaces.org/schema/core
+       http://www.openspaces.org/schema/9.1/core/openspaces-core.xsd">
+
+    <!--
+        Spring property configurer which allows us to use system properties (such as user.name).
+    -->
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+    <!--
+        Enables the usage of @GigaSpaceContext annotation based injection.
+    -->
+    <os-core:giga-space-context/>
+
+    <bean id="mongoClient"
+          class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
+        <property name="db" value="v2-db" />
+        <property name="config">
+            <bean id="config" class="com.mongodb.MongoClient">
+                <constructor-arg value="mongodb.service.consul" type="java.lang.String" />
+                <constructor-arg value="27017" type="int" />
+            </bean>
+        </property>
+    </bean>
+    <bean id="v2SpaceDataSource"
+          class="com.gigaspaces.persistency.MongoSpaceDataSourceBeanFactory">
+        <property name="mongoClientConnector" ref="mongoClient" />
+    </bean>
+
+    <!--
+        A bean representing a space (an IJSpace implementation).
+    -->
+    <os-core:space id="v2-space" url="/./v2-space?groups=xap-15.5.0" schema="persistent" mirror="true"
+                   space-data-source="v2SpaceDataSource">
+        <os-core:properties>
+            <props>
+                <prop key="space-config.engine.cache_policy">1</prop>
+                <prop key="cluster-config.cache-loader.central-data-source">true</prop>
+                <prop key="cluster-config.mirror-service.supports-partial-update">true</prop>
+                <prop key="cluster-config.mirror-service.url">
+                    jini://*/v2-mirror-service_container/v2-mirror-service?groups=xap-15.5.0
+                </prop>
+            </props>
+        </os-core:properties>
+    </os-core:space>
+
+    <!--
+        OpenSpaces simplified space API built on top of IJSpace/JavaSpace.
+    -->
+    <os-core:giga-space id="gigaSpace" space="v2-space" />
+</beans>

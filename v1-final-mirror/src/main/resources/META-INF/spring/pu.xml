@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:os-core="http://www.openspaces.org/schema/core"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.openspaces.org/schema/core
+       http://www.openspaces.org/schema/9.1/core/openspaces-core.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <props>
+                <prop key="space.name">v1-space</prop>
+                <prop key="target.space.name">v2-space</prop>
+                <prop key="lookup.groups">xap-15.5.0</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="mongoClientConnector"
+          class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
+        <property name="db" value="v1-db" />
+        <property name="config">
+            <bean id="config" class="com.mongodb.MongoClient">
+                <constructor-arg value="mongodb.service.consul" type="java.lang.String" />
+                <constructor-arg value="27017" type="int" />
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="mongoSpaceSyncEndpoint"
+          class="com.gigaspaces.persistency.MongoSpaceSynchronizationEndpointBeanFactory">
+        <property name="mongoClientConnector" ref="mongoClientConnector" />
+    </bean>
+
+    <bean id="personDocumentSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonDocumentSchemaAdapter"/>
+    <bean id="personPojoSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonPojoSchemaAdapter"/>
+    <bean id="v2SpaceEndpoint"
+          class="org.openspaces.persistency.space.GigaSpaceSynchronizationEndpointBeanFactory">
+        <property name="targetSpaceName" value="${target.space.name}" />
+        <property name="lookupGroups" value="${lookup.groups}" />
+        <property name="spaceTypeSchemaAdapters">
+            <util:list>
+                <ref bean="personDocumentSchemaAdapter"/>
+                <ref bean="personPojoSchemaAdapter"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="kafkaSpaceSynchronizationEndpoint" class="org.openspaces.persistency.kafka.KafkaSpaceSynchronizationEndpointBeanFactory" >
+        <property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>
+        <property name="secondaryEndpoints">
+            <util:map value-type="com.gigaspaces.sync.SpaceSynchronizationEndpoint">
+                <entry key="${target.space.name}" value-ref="v2SpaceEndpoint"/>
+            </util:map>
+        </property>
+        <property name="kafkaBootstrapServers" value="kafka-0.service.consul:9092"/>
+        <property name="topic" value="${space.name}-topic"/>
+    </bean>
+
+    <!--
+        The mirror space. Uses the Kafka external data source. Persists changes done on the Space that
+        connects to this mirror space into the Kafka.
+    -->
+    <os-core:mirror id="mirror" url="/./mirror-service?groups=${lookup.groups}" space-sync-endpoint="kafkaSpaceSynchronizationEndpoint" operation-grouping="group-by-replication-bulk">
+        <os-core:source-space name="${space.name}" partitions="2" backups="1"/>
+    </os-core:mirror>
+
+</beans>

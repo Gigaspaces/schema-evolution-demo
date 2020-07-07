@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:os-core="http://www.openspaces.org/schema/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.openspaces.org/schema/core http://www.openspaces.org/schema/core/openspaces-core.xsd">
+
+    <!-- Enable GigaSpaces annotation support -->
+    <os-core:annotation-support/>
+    <context:component-scan base-package="com.gigaspaces.schema_evolution" />
+
+    <!-- Spring property configurer which allows us to use system properties (such as user.name). -->
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <props>
+                <prop key="spaceName">v1-space</prop>
+                <prop key="batchSize">1000</prop>
+                <prop key="feederMode">write</prop>
+
+            </props>
+        </property>
+    </bean>
+
+    <bean id="feeder" class="com.gigaspaces.schema_evolution.Feeder">
+        <property name="feederMode" value="${feederMode}"/>
+    </bean>
+
+    <!-- Defines an embedded space -->
+    <os-core:space-proxy id="space" space-name="${spaceName}" lookup-groups="xap-15.5.0">
+        <!-- Optional: additionan space configuration goes here -->
+    </os-core:space-proxy>
+
+    <!-- Defines a gigaSpace for the embedded space -->
+    <os-core:giga-space id="gigaSpace" space="space" tx-manager="transactionManager" />
+
+    <!-- Defines a transaction manager -->
+    <os-core:distributed-tx-manager id="transactionManager" />
+</beans>

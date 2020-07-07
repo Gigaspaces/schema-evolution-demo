@@ -13,18 +13,26 @@
         <module>feeder</module>
         <module>v1-service</module>
         <module>v1-mirror</module>
-        <module>v1-new-mirror</module>
+        <module>v1-temporary-mirror</module>
+        <module>v1-final-mirror</module>
         <module>v2-service</module>
         <module>v2-mirror</module>
+        <module>v2-load-v1-db</module>
     </modules>
     <properties>
-            <gs.version>15.5.0-SNAPSHOT</gs.version>
+        <gs.version>15.5.0-SNAPSHOT</gs.version>
+        <kafka.version>2.5.0</kafka.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.gigaspaces</groupId>
             <artifactId>xap-openspaces</artifactId>
+            <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gigaspaces</groupId>
+            <artifactId>xap-admin</artifactId>
             <version>${gs.version}</version>
         </dependency>
         <dependency>
@@ -37,6 +45,11 @@
             <artifactId>xap-kafka</artifactId>
             <version>${gs.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -44,8 +57,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
                 <configuration>
                     <outputDirectory>${java.io.tmpdir}/schema-evolution-demo</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

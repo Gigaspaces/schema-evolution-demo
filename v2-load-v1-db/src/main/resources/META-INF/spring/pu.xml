@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:os-core="http://www.openspaces.org/schema/core"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.openspaces.org/schema/core http://www.openspaces.org/schema/core/openspaces-core.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- Enable GigaSpaces annotation support -->
+    <os-core:annotation-support/>
+    <context:component-scan base-package="com.gigaspaces.schema_evolution" />
+
+    <!-- Enable GigaSpaces annotation support -->
+    <os-core:annotation-support/>
+    <context:component-scan base-package="com.gigaspaces.schema_evolution" />
+
+    <!-- Spring property configurer which allows us to use system properties (such as user.name). -->
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <props>
+                <prop key="spaceName">v2-space</prop>
+                <prop key="lookupGroups">xap-15.5.0</prop>
+                <prop key="mongoDbIp">mongodb.service.consul</prop>
+                <prop key="mongoDbPort">27017</prop>
+                <prop key="dbName">v1-db</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="dbLoader" class="com.gigaspaces.schema_evolution.DbLoader">
+        <property name="mongoDbIp" value="${mongoDbIp}"/>
+        <property name="mongoDbPort" value="${mongoDbPort}"/>
+        <property name="dbName" value="${dbName}"/>
+        <property name="schemaAdapters">
+            <util:list>
+                <ref bean="personDocumentSchemaAdapter"/>
+                <ref bean="personPojoSchemaAdapter"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="personDocumentSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonDocumentSchemaAdapter"/>
+    <bean id="personPojoSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonPojoSchemaAdapter"/>
+
+    <!-- Defines an embedded space -->
+    <os-core:space-proxy id="space" space-name="${spaceName}" lookup-groups="${lookupGroups}">
+        <!-- Optional: additionan space configuration goes here -->
+    </os-core:space-proxy>
+
+    <!-- Defines a gigaSpace for the embedded space -->
+    <os-core:giga-space id="gigaSpace" space="space" tx-manager="transactionManager" />
+
+    <!-- Defines a transaction manager -->
+    <os-core:distributed-tx-manager id="transactionManager" />
+</beans>
