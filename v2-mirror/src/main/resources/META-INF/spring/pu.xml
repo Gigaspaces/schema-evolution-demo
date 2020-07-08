@@ -14,7 +14,7 @@
 
 	<!-- ANNOTATION AND COMPONENT SCAN CONFIGURATION -->
 	<!-- Enable scan for OpenSpaces and Spring components -->
-	<context:component-scan base-package="com.gigaspaces.persistency.qa.model" />
+	<context:component-scan base-package="com.gigaspaces.schema_evolution.model" />
 	<!-- <context:component-scan base-package="com.c123.billbuddy.remoting"
 		/> -->
 
@@ -57,11 +57,11 @@
 
 	<bean id="v2MongoClient"
 		  class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
-		<property name="db" value="v2-qa-db" />
+		<property name="db" value="v2-db" />
 		<property name="config">
 			<bean class="com.mongodb.MongoClient">
-				<constructor-arg value="localhost" type="java.lang.String" />
-				<constructor-arg value="27022" type="int" />
+				<constructor-arg value="127.0.1.1" type="java.lang.String" />
+				<constructor-arg value="27017" type="int" />
 				<!--<property name="writeConcern" value="ACKNOWLEDGED" />-->
 			</bean>
 		</property>

@@ -9,17 +9,17 @@
         <property name="properties">
             <props>
                 <prop key="space.name">v1-space</prop>
-                <prop key="lookup.groups">kafka-test</prop>
+                <prop key="lookup.groups">schema-demo</prop>
             </props>
         </property>
     </bean>
 
     <bean id="mongoClientConnector"
           class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
-        <property name="db" value="qadb" />
+        <property name="db" value="v1-db" />
         <property name="config">
             <bean id="config" class="com.mongodb.MongoClient">
-                <constructor-arg value="localhost" type="java.lang.String" />
+                <constructor-arg value="127.0.1.1" type="java.lang.String" />
                 <constructor-arg value="27017" type="int" />
             </bean>
         </property>
@@ -30,11 +30,10 @@
         <property name="mongoClientConnector" ref="mongoClientConnector" />
     </bean>
 
-    <bean id="kafkaServers" class="com.gigaspaces.persistency.qa.kafka.KafkaBootstrapServers" factory-method="getInstance" />
 
     <bean id="kafkaSpaceSynchronizationEndpoint" class="org.openspaces.persistency.kafka.KafkaSpaceSynchronizationEndpointBeanFactory" >
         <property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>
-        <property name="kafkaBootstrapServers" ref="kafkaServers"/>
+        <property name="kafkaBootstrapServers" value="127.0.1.1:9092"/>
         <property name="topic" value="${space.name}-topic"/>
     </bean>
 

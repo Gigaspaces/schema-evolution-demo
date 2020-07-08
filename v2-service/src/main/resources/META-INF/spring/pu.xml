@@ -20,11 +20,11 @@
 
     <bean id="mongoClient"
           class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
-        <property name="db" value="v2-qadb" />
+        <property name="db" value="v2-db" />
         <property name="config">
             <bean id="config" class="com.mongodb.MongoClient">
-                <constructor-arg value="localhost" type="java.lang.String" />
-                <constructor-arg value="27022" type="int" />
+                <constructor-arg value="127.0.1.1" type="java.lang.String" />
+                <constructor-arg value="27017" type="int" />
             </bean>
         </property>
     </bean>
@@ -36,7 +36,7 @@
     <!--
         A bean representing a space (an IJSpace implementation).
     -->
-    <os-core:space id="v2-space" url="/./v2-space?groups=kafka-test" schema="persistent" mirror="true"
+    <os-core:space id="v2-space" url="/./v2-space?groups=schema-demo" schema="persistent" mirror="true"
                    space-data-source="v2SpaceDataSource">
         <os-core:properties>
             <props>
@@ -44,7 +44,7 @@
                 <prop key="cluster-config.cache-loader.central-data-source">true</prop>
                 <prop key="cluster-config.mirror-service.supports-partial-update">true</prop>
                 <prop key="cluster-config.mirror-service.url">
-                    jini://*/v2-mirror-service_container/v2-mirror-service?groups=kafka-test
+                    jini://*/v2-mirror-service_container/v2-mirror-service?groups=schema-demo
                 </prop>
             </props>
         </os-core:properties>

@@ -14,4 +14,18 @@
     <build>
         <finalName>v1-service</finalName>
     </build>
+
+    <dependencies><!-- mongodb java driver -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.0</version>
+        </dependency>
+    </dependencies>
 </project>
