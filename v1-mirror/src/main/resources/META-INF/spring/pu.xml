@@ -14,20 +14,20 @@
         </property>
     </bean>
 
-    <bean id="mongoClientConnector"
-          class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
-        <property name="db" value="v1-db" />
-        <property name="config">
-            <bean id="config" class="com.mongodb.MongoClient">
-                <constructor-arg value="127.0.1.1" type="java.lang.String" />
-                <constructor-arg value="27017" type="int" />
-            </bean>
-        </property>
-    </bean>
 
     <bean id="mongoSpaceSyncEndpoint"
           class="com.gigaspaces.persistency.MongoSpaceSynchronizationEndpointBeanFactory">
-        <property name="mongoClientConnector" ref="mongoClientConnector" />
+        <property name="mongoClientConnector">
+            <bean class="com.gigaspaces.persistency.MongoClientConnectorBeanFactory">
+                <property name="db" value="v1-db" />
+                <property name="config">
+                    <bean class="com.mongodb.MongoClient">
+                        <constructor-arg value="127.0.1.1" type="java.lang.String" />
+                        <constructor-arg value="27017" type="int" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
     </bean>
 
 
