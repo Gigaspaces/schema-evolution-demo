@@ -3,6 +3,7 @@ package com.gigaspaces.schema_evolution.adapters;
 import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
 import com.gigaspaces.document.SpaceDocument;
 import com.gigaspaces.metadata.SpaceTypeDescriptor;
+import com.gigaspaces.schema_evolution.util.DemoUtils;
 
 public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
 
@@ -18,6 +19,6 @@ public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
     }
 
     public String getTypeName() {
-        return "PersonDocument";
+        return DemoUtils.PERSON_DOCUMENT;
     }
 }
