@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 import com.gigaspaces.schema_evolution.util.DemoUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+
+import java.util.concurrent.*;
 
 import static com.gigaspaces.schema_evolution.util.DemoUtils.BATCH_SIZE;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
@@ -24,6 +27,8 @@ public class Feeder {
     private int batchSize = BATCH_SIZE;
     private EntryType entryType;
     private FeederMode feederMode;
+    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> future;
 
     @PostConstruct
     public void runFeed() throws Exception {
@@ -31,9 +36,15 @@ public class Feeder {
         gigaSpace.getTypeManager().registerTypeDescriptor(DemoUtils.getPersonTypeDescriptor());
         switch (feederMode) {
             case write:
-                write();
-                break;
+                future = executorService.scheduleAtFixedRate(new WriteTask(), 1000, 1000, TimeUnit.MILLISECONDS);
         }
+    }
+
+    @PreDestroy
+    public void destroy(){
+        future.cancel(false);
+        future = null;
+        executorService.shutdown();
     }
 
     private void write() {
@@ -80,5 +91,14 @@ public class Feeder {
     public enum EntryType {
         POJO,
         DOCUMENT
+    }
+
+    private class WriteTask implements Runnable{
+
+        @Override
+        public void run() {
+            gigaSpace.writeMultiple(createUserDocumentArray());
+            logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+        }
     }
 }
