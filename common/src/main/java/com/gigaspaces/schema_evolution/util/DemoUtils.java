@@ -1,12 +1,16 @@
 package com.gigaspaces.schema_evolution.util;
 
 import com.gigaspaces.datasource.SpaceDataSourceLoadRequest;
+import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
 import com.gigaspaces.document.SpaceDocument;
 import com.gigaspaces.metadata.SpaceTypeDescriptor;
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder;
 import com.gigaspaces.metadata.index.SpaceIndexType;
 import com.gigaspaces.persistency.MongoSpaceDataSourceFactory;
+import com.gigaspaces.schema_evolution.adapters.PersonSchemaAdapter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -41,8 +45,8 @@ public class DemoUtils {
     }
 
     public static SpaceDataSourceLoadRequest createDataLoadRequest(){
-        return new SpaceDataSourceLoadRequest(new MongoSpaceDataSourceFactory().setHost("127.0.1.1").setPort(27017).setDb("v1-db"));
+        MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().setHost("127.0.1.1").setPort(27017).setDb("v1-db");
+        Collection<SpaceTypeSchemaAdapter> adapters = Collections.singleton(new PersonSchemaAdapter());
+        return new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, adapters);
     }
-
-
 }
