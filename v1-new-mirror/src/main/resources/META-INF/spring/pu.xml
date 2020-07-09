@@ -36,7 +36,7 @@
         </property>
     </bean>
 
-    <bean id="personSchemaAdapter" class="com.gigaspaces.PersonSchemaAdapter"/>
+    <bean id="personSchemaAdapter" class="com.gigaspaces.schema_evolution.adapters.PersonSchemaAdapter"/>
 
     <bean id="v2SpaceEndpoint"
           class="org.openspaces.persistency.space.GigaSpaceSynchronizationEndpointBeanFactory">
