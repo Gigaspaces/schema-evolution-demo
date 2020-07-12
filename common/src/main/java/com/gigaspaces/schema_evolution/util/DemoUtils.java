@@ -39,7 +39,6 @@ public class DemoUtils {
         result.setProperty("created", new Date(System.currentTimeMillis()));
         result.setProperty("removedField", createRandomString(10));
         result.setProperty("typeChangeField", createRandomString(10));
-
         return result;
     }
 
