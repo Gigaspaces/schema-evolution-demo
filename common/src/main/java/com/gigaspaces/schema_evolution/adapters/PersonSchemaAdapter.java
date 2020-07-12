@@ -13,8 +13,8 @@ public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
     }
 
     public SpaceDocument adaptEntry(SpaceDocument spaceDocument) {
-        spaceDocument.setProperty("calculatedField", spaceDocument.getProperty("removedField").toString() + " " + spaceDocument.getProperty("newField"));
         spaceDocument.setProperty("newField", createRandomString(8));
+        spaceDocument.setProperty("calculatedField", spaceDocument.getProperty("removedField").toString() + " " + spaceDocument.getProperty("newField"));
         spaceDocument.setProperty("typeChangeField", spaceDocument.getProperty("typeChangeField").toString().length());
         spaceDocument.removeProperty("removedField");
         return spaceDocument;
