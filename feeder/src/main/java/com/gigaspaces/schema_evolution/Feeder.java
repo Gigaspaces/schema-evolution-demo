@@ -36,7 +36,7 @@ public class Feeder {
         gigaSpace.getTypeManager().registerTypeDescriptor(DemoUtils.getPersonTypeDescriptor());
         switch (feederMode) {
             case write:
-                future = executorService.scheduleAtFixedRate(new WriteTask(), 1000, 1000, TimeUnit.MILLISECONDS);
+                future = executorService.scheduleAtFixedRate(new WriteTask(), 5000, 5000, TimeUnit.MILLISECONDS);
         }
     }
 

@@ -33,10 +33,13 @@ public class DemoUtils {
 
     public static SpaceDocument createPersonDocument(){
         SpaceDocument result = new SpaceDocument().setTypeName(PERSON_DOCUMENT);
-        int id = random.nextInt();
+        int id = Math.abs(random.nextInt());
         result.setProperty("userId", id);
         result.setProperty("routing", id);
         result.setProperty("created", new Date(System.currentTimeMillis()));
+        result.setProperty("removedField", createRandomString(10));
+        result.setProperty("typeChangeField", createRandomString(10));
+
         return result;
     }
 
@@ -48,5 +51,14 @@ public class DemoUtils {
         MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().setHost("127.0.1.1").setPort(27017).setDb("v1-db");
         Collection<SpaceTypeSchemaAdapter> adapters = Collections.singleton(new PersonSchemaAdapter());
         return new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, adapters);
+    }
+
+    public static String createRandomString(int length){
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }
