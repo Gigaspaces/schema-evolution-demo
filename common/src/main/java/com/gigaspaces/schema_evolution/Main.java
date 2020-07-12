@@ -1,7 +1,11 @@
 package com.gigaspaces.schema_evolution;
 
 import com.gigaspaces.async.AsyncFuture;
+import com.gigaspaces.datasource.SpaceDataSourceLoadRequest;
 import com.gigaspaces.datasource.SpaceDataSourceLoadResult;
+import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
+import com.gigaspaces.persistency.MongoSpaceDataSourceFactory;
+import com.gigaspaces.schema_evolution.adapters.PersonSchemaAdapter;
 import com.gigaspaces.schema_evolution.util.DemoUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openspaces.admin.Admin;
@@ -11,6 +15,8 @@ import org.openspaces.admin.pu.ProcessingUnitDeployment;
 import org.openspaces.core.GigaSpace;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -126,10 +132,15 @@ public class Main {
         initAdmin();
         v2Gigaspace = admin.getProcessingUnits().waitFor("v2-service").waitForSpace().getGigaSpace();
         if(v2Gigaspace != null) {
-            AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(DemoUtils.createDataLoadRequest());
+            AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(createDataLoadRequest());
             future.get(TIMEOUT, TimeUnit.SECONDS);
         }
+    }
 
+    public static SpaceDataSourceLoadRequest createDataLoadRequest(){
+        MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().setHost("127.0.1.1").setPort(27017).setDb("v1-db");
+        Collection<SpaceTypeSchemaAdapter> adapters = Collections.singleton(new PersonSchemaAdapter());
+        return new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, adapters);
     }
 
     private static void initAdmin(){

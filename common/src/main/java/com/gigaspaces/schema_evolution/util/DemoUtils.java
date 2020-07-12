@@ -21,35 +21,21 @@ public class DemoUtils {
 
     public static SpaceTypeDescriptor getPersonTypeDescriptor(){
         return new SpaceTypeDescriptorBuilder(PERSON_DOCUMENT)
-                .idProperty("userId", false)
+                .idProperty("id", false)
                 .routingProperty("routing")
                 .addPropertyIndex("created", SpaceIndexType.EQUAL)
                 .create();
     }
 
-    public static SpaceTypeDescriptor getOrderTypeDescriptor(){
-        return null;
-    }
-
     public static SpaceDocument createPersonDocument(){
         SpaceDocument result = new SpaceDocument().setTypeName(PERSON_DOCUMENT);
         int id = Math.abs(random.nextInt());
-        result.setProperty("userId", id);
+        result.setProperty("id", id);
         result.setProperty("routing", id);
         result.setProperty("created", new Date(System.currentTimeMillis()));
         result.setProperty("removedField", createRandomString(10));
         result.setProperty("typeChangeField", createRandomString(10));
         return result;
-    }
-
-    public static SpaceDocument createOrderDocument(){
-        return null;
-    }
-
-    public static SpaceDataSourceLoadRequest createDataLoadRequest(){
-        MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().setHost("127.0.1.1").setPort(27017).setDb("v1-db");
-        Collection<SpaceTypeSchemaAdapter> adapters = Collections.singleton(new PersonSchemaAdapter());
-        return new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, adapters);
     }
 
     public static String createRandomString(int length){
