@@ -74,7 +74,6 @@ public class Main {
         initAdmin();
         undeployPu("feeder");
         undeployPu("v1-service");
-        undeployPu("v1-mirror");
         undeployPu("v1-new-mirror");
         undeployPu("v2-service");
         undeployPu("v2-mirror");
