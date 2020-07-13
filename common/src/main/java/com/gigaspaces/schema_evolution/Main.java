@@ -6,7 +6,6 @@ import com.gigaspaces.datasource.SpaceDataSourceLoadResult;
 import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
 import com.gigaspaces.persistency.MongoSpaceDataSourceFactory;
 import com.gigaspaces.schema_evolution.adapters.PersonSchemaAdapter;
-import com.gigaspaces.schema_evolution.util.DemoUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openspaces.admin.Admin;
 import org.openspaces.admin.AdminFactory;
@@ -20,16 +19,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class Main {
-    private final static long TIMEOUT = 60;
+    private final static long TIMEOUT = 30;
     private final static String SEPARTAOR = File.separator;
     private final static String DEPLOY_DIR = System.getProperty("java.io.tmpdir") + SEPARTAOR + "schema-evolution-demo";
     private final static String LOOKUP_GROUP = "schema-demo";
-    private enum Action {deployAll, undeployAll, deployV1, deployV2, undeployV1Mirror, deployV1NewMirror, deployFeeder, loadDB}
+    private enum Action {deployAll, undeployAll, deployV1, deployV2, undeployV1Mirror, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, loadDB}
 
     private static Admin admin;
     private static ProcessingUnit v1PU, v2PU, v1MirrorPU, v2MirrorPU, feeder;
@@ -55,8 +53,13 @@ public class Main {
             case undeployV1Mirror:
                 undeployV1Mirror();
                 break;
-            case deployV1NewMirror:
-                deployV1NewMirror();
+            case deployV1TemporaryMirror:
+                undeployV1Mirror();
+                deployMirror("v1-temporary-mirror");
+                break;
+            case deployV1FinalMirror:
+                undeployV1Mirror();
+                deployMirror("v1-final-mirror");
                 break;
             case deployFeeder:
                 deployFeeder(feederMode);
@@ -80,9 +83,13 @@ public class Main {
         initAdmin();
         undeployPu("feeder");
         undeployPu("v1-service");
-        undeployPu("v1-new-mirror");
+        undeployPu("v1-mirror");
         undeployPu("v2-service");
         undeployPu("v2-mirror");
+    }
+
+    private static void deployMirror(String jarName){
+        deployPu(jarName,"v1-mirror", null);
     }
 
     private static void deployV1Service(){
@@ -110,11 +117,6 @@ public class Main {
 
     private static void undeployV1Mirror(){
         undeployPu("v1-mirror");
-    }
-
-    private static void deployV1NewMirror(){
-        v1MirrorPU = deployPu("v1-new-mirror");
-        waitForPuInstances(v1MirrorPU, 1);
     }
 
     private static void deployFeeder(FeederMode feedMode){
@@ -150,15 +152,21 @@ public class Main {
         }
     }
 
-    private static ProcessingUnit deployPu(String puName){
-        return deployPu(puName, null);
+    private static ProcessingUnit deployPu(String jarName){
+        return deployPu(jarName, null);
     }
 
-    private static ProcessingUnit deployPu(String puName, Map<String,String> contextProperties){
+    private static ProcessingUnit deployPu(String jarName, Map<String,String> contextProperties){
+        return deployPu(jarName, null, contextProperties);
+    }
+
+    private static ProcessingUnit deployPu(String jarName, String puName, Map<String,String> contextProperties){
         initAdmin();
-        String jarPath = FilenameUtils.normalize( DEPLOY_DIR + SEPARTAOR + puName + ".jar");
+        String jarPath = FilenameUtils.normalize( DEPLOY_DIR + SEPARTAOR + jarName + ".jar");
         File puArchive = new File(jarPath);
         ProcessingUnitDeployment deployment = new ProcessingUnitDeployment(puArchive);
+        if(puName != null)
+            deployment.name(puName);
         if(contextProperties != null){
             for(Map.Entry<String,String> entry: contextProperties.entrySet()){
                 deployment.setContextProperty(entry.getKey(), entry.getValue());

@@ -44,7 +44,7 @@
         <property name="targetSpaceName" value="${target.space.name}" />
         <property name="lookupGroups" value="${lookup.groups}" />
         <property name="spaceTypeSchemaAdapters">
-            <util:list list-class="java.util.ArrayList" value-type="com.gigaspaces.datasource.SpaceTypeSchemaAdapter">
+            <util:list>
                 <ref bean="personSchemaAdapter"/>
             </util:list>
         </property>

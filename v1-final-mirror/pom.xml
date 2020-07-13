@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>v1-new-mirror</artifactId>
+    <artifactId>v1-final-mirror</artifactId>
 
 
 
     <build>
-        <finalName>v1-new-mirror</finalName>
+        <finalName>v1-final-mirror</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -31,7 +31,7 @@
                                 <artifactItem>
                                     <groupId>org.apache.kafka</groupId>
                                     <artifactId>kafka-clients</artifactId>
-                                    <version>2.4.1</version>
+                                    <version>${kafka.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
                                 <artifactItem>

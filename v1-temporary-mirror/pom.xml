@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>v2-mirror</artifactId>
+    <artifactId>v1-temporary-mirror</artifactId>
 
     <build>
-        <finalName>v2-mirror</finalName>
+        <finalName>v1-temporary-mirror</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

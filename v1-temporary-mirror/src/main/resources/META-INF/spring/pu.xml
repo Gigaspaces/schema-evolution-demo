@@ -32,7 +32,7 @@
 
 
     <bean id="kafkaSpaceSynchronizationEndpoint" class="org.openspaces.persistency.kafka.KafkaSpaceSynchronizationEndpointBeanFactory" >
-        <property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>
+<!--        <property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>-->
         <property name="kafkaBootstrapServers" value="127.0.1.1:9092"/>
         <property name="topic" value="v1-space-topic"/>
     </bean>

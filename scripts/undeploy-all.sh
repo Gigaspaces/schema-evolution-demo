@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -e
-
-docker rm -f $(docker ps -aq)
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)

@@ -29,7 +29,7 @@
                                 <artifactItem>
                                     <groupId>org.apache.kafka</groupId>
                                     <artifactId>kafka-clients</artifactId>
-                                    <version>2.4.1</version>
+                                    <version>${kafka.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
                                 <artifactItem>

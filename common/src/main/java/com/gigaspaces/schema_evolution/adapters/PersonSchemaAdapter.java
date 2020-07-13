@@ -12,6 +12,7 @@ public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
     public PersonSchemaAdapter() {
     }
 
+    @Override
     public SpaceDocument adaptEntry(SpaceDocument spaceDocument) {
         spaceDocument.setProperty("newField", createRandomString(8));
         spaceDocument.setProperty("calculatedField", spaceDocument.getProperty("removedField").toString() + " " + spaceDocument.getProperty("newField"));
@@ -20,10 +21,12 @@ public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
         return spaceDocument;
     }
 
+    @Override
     public SpaceTypeDescriptor adaptTypeDescriptor(SpaceTypeDescriptor spaceTypeDescriptor) {
         return spaceTypeDescriptor;
     }
 
+    @Override
     public String getTypeName() {
         return DemoUtils.PERSON_DOCUMENT;
     }

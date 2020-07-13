@@ -13,12 +13,14 @@
         <module>feeder</module>
         <module>v1-service</module>
         <module>v1-mirror</module>
-        <module>v1-new-mirror</module>
+        <module>v1-temporary-mirror</module>
+        <module>v1-final-mirror</module>
         <module>v2-service</module>
         <module>v2-mirror</module>
     </modules>
     <properties>
         <gs.version>15.5.0-SNAPSHOT</gs.version>
+        <kafka.version>2.5.0</kafka.version>
     </properties>
 
     <dependencies>
