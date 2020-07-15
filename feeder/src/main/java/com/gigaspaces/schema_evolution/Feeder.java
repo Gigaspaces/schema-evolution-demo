@@ -96,8 +96,6 @@ public class Feeder {
         public void run() {
             gigaSpace.writeMultiple(createPersonDocumentArray());
             logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
-            gigaSpace.writeMultiple(createPersonArray());
-            logger.info("Feeder wrote " + batchSize + " Person POJOs.");
             batchCounter.incrementAndGet();
         }
     }

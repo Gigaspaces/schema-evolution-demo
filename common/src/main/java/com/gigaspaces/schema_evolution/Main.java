@@ -15,6 +15,7 @@ import org.openspaces.admin.pu.ProcessingUnitDeployment;
 import org.openspaces.core.GigaSpace;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -131,7 +132,9 @@ public class Main {
     private static void loadV1DbToV2() throws ExecutionException, InterruptedException, TimeoutException {
         v2Gigaspace = admin.getProcessingUnits().waitFor("v2-service").waitForSpace().getGigaSpace();
         if(v2Gigaspace != null) {
-            AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(createDataLoadRequest());
+            MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
+            SpaceDataSourceLoadRequest spaceDataSourceLoadRequest = new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonDocumentSchemaAdapter()));
+            AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(spaceDataSourceLoadRequest);
             future.get(TIMEOUT, TimeUnit.SECONDS);
         }
     }
