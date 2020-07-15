@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class Main {
-    private final static long TIMEOUT = 30;
+    private final static long TIMEOUT = 60;
     private final static String SEPARTAOR = File.separator;
     private final static String DEPLOY_DIR = System.getProperty("java.io.tmpdir") + SEPARTAOR + "schema-evolution-demo";
     private final static String LOOKUP_GROUP = "schema-demo";
@@ -35,7 +35,8 @@ public class Main {
 
     public static void main(String[] args) {
         Action action = Action.valueOf(args[0]);
-        FeederMode feederMode = args.length >= 2 ? FeederMode.valueOf(args[1]) : FeederMode.write;
+        String feederMode = args.length >= 2 ? args[1] : "write";
+        initAdmin();
         switch (action) {
             case deployAll:
                 deployV1Service();
@@ -80,7 +81,6 @@ public class Main {
     }
 
     private static void undeployAllServices() {
-        initAdmin();
         undeployPu("feeder");
         undeployPu("v1-service");
         undeployPu("v1-mirror");
@@ -93,7 +93,6 @@ public class Main {
     }
 
     private static void deployV1Service(){
-        initAdmin();
         v1PU = deployPu("v1-service");
         v1MirrorPU = deployPu("v1-mirror");
         waitForPuInstances(v1PU, 4);
@@ -119,9 +118,9 @@ public class Main {
         undeployPu("v1-mirror");
     }
 
-    private static void deployFeeder(FeederMode feedMode){
+    private static void deployFeeder(String feedMode){
         Map<String, String> contextProperties = new HashMap<>();
-        contextProperties.put("feedMode", feedMode.toString());
+        contextProperties.put("feedMode", feedMode);
         feeder = deployPu("feeder", contextProperties);
     }
 
@@ -131,7 +130,6 @@ public class Main {
     }
 
     private static void loadV1DbToV2() throws ExecutionException, InterruptedException, TimeoutException {
-        initAdmin();
         v2Gigaspace = admin.getProcessingUnits().waitFor("v2-service").waitForSpace().getGigaSpace();
         if(v2Gigaspace != null) {
             AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(createDataLoadRequest());
@@ -161,7 +159,6 @@ public class Main {
     }
 
     private static ProcessingUnit deployPu(String jarName, String puName, Map<String,String> contextProperties){
-        initAdmin();
         String jarPath = FilenameUtils.normalize( DEPLOY_DIR + SEPARTAOR + jarName + ".jar");
         File puArchive = new File(jarPath);
         ProcessingUnitDeployment deployment = new ProcessingUnitDeployment(puArchive);
@@ -176,7 +173,6 @@ public class Main {
     }
 
     private static void undeployPu(String puName){
-        initAdmin();
         undeployPu(admin.getProcessingUnits().waitFor(puName, TIMEOUT, TimeUnit.SECONDS));
     }
 

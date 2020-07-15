@@ -2,11 +2,12 @@ package com.gigaspaces.schema_evolution;
 
 import com.gigaspaces.client.WriteModifiers;
 import com.gigaspaces.document.SpaceDocument;
+import com.gigaspaces.schema_evolution.model.Person;
+import com.gigaspaces.schema_evolution.util.FeederUtils;
 import org.openspaces.core.GigaSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import com.gigaspaces.schema_evolution.util.DemoUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,8 +15,8 @@ import javax.annotation.Resource;
 
 import java.util.concurrent.*;
 
-import static com.gigaspaces.schema_evolution.util.DemoUtils.BATCH_SIZE;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
+import static com.gigaspaces.schema_evolution.util.FeederUtils.*;
 
 
 @Component
@@ -33,7 +34,7 @@ public class Feeder {
     @PostConstruct
     public void runFeed() throws Exception {
         logger.info("Initialized: connected to space {}", gigaSpace.getSpaceName());
-        gigaSpace.getTypeManager().registerTypeDescriptor(DemoUtils.getPersonTypeDescriptor());
+        gigaSpace.getTypeManager().registerTypeDescriptor(getV1PersonTypeDescriptor());
         switch (feederMode) {
             case write:
                 future = executorService.scheduleAtFixedRate(new WriteTask(), 5000, 5000, TimeUnit.MILLISECONDS);
@@ -50,7 +51,7 @@ public class Feeder {
     private void write() {
         while (true) {
             try {
-                gigaSpace.writeMultiple(createUserDocumentArray(), WriteModifiers.MEMORY_ONLY_SEARCH);
+                gigaSpace.writeMultiple(createUserDocumentArray());
                 logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -63,9 +64,17 @@ public class Feeder {
     private SpaceDocument[] createUserDocumentArray(){
         SpaceDocument[] users = new SpaceDocument[batchSize];
         for (int counter = 0; counter < batchSize; counter++) {
-            users[counter] = DemoUtils.createPersonDocument();
+            users[counter] = createV1PersonDocument();
         }
         return users;
+    }
+
+    private Person[] createPersonArray(){
+        Person[] people = new Person[batchSize];
+        for (int counter = 0; counter < batchSize; counter++) {
+            people[counter] = FeederUtils.createV1PersonPojo();
+        }
+        return people;
     }
 
     public int getBatchSize() {
@@ -99,6 +108,8 @@ public class Feeder {
         public void run() {
             gigaSpace.writeMultiple(createUserDocumentArray());
             logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+            gigaSpace.writeMultiple(createPersonArray());
+            logger.info("Feeder wrote " + batchSize + " Person POJOs.");
         }
     }
 }
