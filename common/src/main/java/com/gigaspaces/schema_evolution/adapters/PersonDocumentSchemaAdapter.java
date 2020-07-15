@@ -8,9 +8,9 @@ import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.createRandomString;
 
-public class PersonSchemaAdapter implements SpaceTypeSchemaAdapter {
+public class PersonDocumentSchemaAdapter implements SpaceTypeSchemaAdapter {
 
-    public PersonSchemaAdapter() {
+    public PersonDocumentSchemaAdapter() {
     }
 
     @Override

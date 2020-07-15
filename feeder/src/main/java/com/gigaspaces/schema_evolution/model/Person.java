@@ -9,7 +9,6 @@ public class Person {
     private Integer id;
     private Integer routing;
     private Date created;
-    private String removedField;
     private String typeChangeField;
 
     public Person() {
@@ -39,15 +38,6 @@ public class Person {
 
     public Person setCreated(Date created) {
         this.created = created;
-        return this;
-    }
-
-    public String getRemovedField() {
-        return removedField;
-    }
-
-    public Person setRemovedField(String removedField) {
-        this.removedField = removedField;
         return this;
     }
 

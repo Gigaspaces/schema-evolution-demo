@@ -26,11 +26,10 @@ public class FeederUtils {
                 .create();
     }
 
-    public static SpaceDocument createV1PersonDocument(){
-        int bound = (int) 1e5;
+    public static SpaceDocument createV1PersonDocument(int id){
         SpaceDocument result = new SpaceDocument().setTypeName(PERSON_DOCUMENT);
-        result.setProperty("id", getNextInt(bound));
-        result.setProperty("routing", getNextInt(bound));
+        result.setProperty("id", id);
+        result.setProperty("routing", getNextInt(100000));
         result.setProperty("created", new Date(System.currentTimeMillis()));
         result.setProperty("removedField", createRandomString(getNextInt(10)));
         result.setProperty("typeChangeField", createRandomString(getNextInt(10)));
@@ -38,12 +37,11 @@ public class FeederUtils {
         return result;
     }
 
-    public static Person createV1PersonPojo(){
-        int bound = (int) 1e5;
-        return new Person().setId(getNextInt(bound)).setRouting(getNextInt(bound)).setCreated(new Date(System.currentTimeMillis())).setRemovedField(createRandomString(getNextInt(10))).setTypeChangeField(createRandomString(getNextInt(10)));
+    public static Person createV1PersonPojo(int id){
+        return new Person().setId(id).setRouting(getNextInt(100000)).setCreated(new Date(System.currentTimeMillis())).setTypeChangeField(createRandomString(getNextInt(10)));
     }
 
     private static int getNextInt(int bound){
-        return Math.abs(random.nextInt(bound));
+        return Math.abs(random.nextInt(bound)) + 1;
     }
 }

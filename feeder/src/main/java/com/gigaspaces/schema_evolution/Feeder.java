@@ -1,6 +1,5 @@
 package com.gigaspaces.schema_evolution;
 
-import com.gigaspaces.client.WriteModifiers;
 import com.gigaspaces.document.SpaceDocument;
 import com.gigaspaces.schema_evolution.model.Person;
 import com.gigaspaces.schema_evolution.util.FeederUtils;
@@ -14,6 +13,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
 import static com.gigaspaces.schema_evolution.util.FeederUtils.*;
@@ -30,6 +30,7 @@ public class Feeder {
     private FeederMode feederMode;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
+    private AtomicInteger batchCounter = new AtomicInteger(0);
 
     @PostConstruct
     public void runFeed() throws Exception {
@@ -48,23 +49,10 @@ public class Feeder {
         executorService.shutdown();
     }
 
-    private void write() {
-        while (true) {
-            try {
-                gigaSpace.writeMultiple(createUserDocumentArray());
-                logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.info("Stopped space feeder.");
-                break;
-            }
-        }
-    }
-
-    private SpaceDocument[] createUserDocumentArray(){
+    private SpaceDocument[] createPersonDocumentArray(){
         SpaceDocument[] users = new SpaceDocument[batchSize];
         for (int counter = 0; counter < batchSize; counter++) {
-            users[counter] = createV1PersonDocument();
+            users[counter] = createV1PersonDocument(batchCounter.get() * batchSize + counter);
         }
         return users;
     }
@@ -72,7 +60,7 @@ public class Feeder {
     private Person[] createPersonArray(){
         Person[] people = new Person[batchSize];
         for (int counter = 0; counter < batchSize; counter++) {
-            people[counter] = FeederUtils.createV1PersonPojo();
+            people[counter] = FeederUtils.createV1PersonPojo(batchCounter.get() * batchSize + counter);
         }
         return people;
     }
@@ -106,10 +94,11 @@ public class Feeder {
 
         @Override
         public void run() {
-            gigaSpace.writeMultiple(createUserDocumentArray());
+            gigaSpace.writeMultiple(createPersonDocumentArray());
             logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
             gigaSpace.writeMultiple(createPersonArray());
             logger.info("Feeder wrote " + batchSize + " Person POJOs.");
+            batchCounter.incrementAndGet();
         }
     }
 }
