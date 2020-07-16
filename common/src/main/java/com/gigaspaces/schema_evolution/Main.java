@@ -31,7 +31,6 @@ public class Main {
 
     private static Admin admin;
     private static GridServiceManager gsm;
-    private static ProcessingUnit v1PU, v2PU, v1MirrorPU, v2MirrorPU;
     private static GigaSpace v2Gigaspace;
 
     public static void main(String[] args) {
@@ -64,11 +63,7 @@ public class Main {
                 case loadDB:
                     try {
                         loadV1DbToV2();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (TimeoutException e) {
+                    } catch (ExecutionException | TimeoutException | InterruptedException e) {
                         e.printStackTrace();
                     }
                     break;
@@ -94,20 +89,20 @@ public class Main {
     }
 
     private static void deployV1Service(){
-        v1PU = deployPu("v1-service");
-        v1MirrorPU = deployPu("v1-mirror");
-        if(!waitForPuInstances(v1PU, 4))
+        ProcessingUnit v1PU = deployPu("v1-service");
+        ProcessingUnit v1MirrorPU = deployPu("v1-mirror");
+        if(waitForPuInstances(v1PU, 4))
             throw new RuntimeException("Failed to deploy v1 pu");
-        if(!waitForPuInstances(v1MirrorPU, 1))
+        if(waitForPuInstances(v1MirrorPU, 1))
             throw new RuntimeException("Failed to deploy v1 mirror");
     }
 
     private static void deployV2Service(){
-        v2PU = deployPu("v2-service");
-        v2MirrorPU = deployPu("v2-mirror");
-        if(!waitForPuInstances(v2PU, 4))
+        ProcessingUnit v2PU = deployPu("v2-service");
+        ProcessingUnit v2MirrorPU = deployPu("v2-mirror");
+        if(waitForPuInstances(v2PU, 4))
             throw new RuntimeException("Failed to deploy v2 pu");
-        if(!waitForPuInstances(v2MirrorPU, 1))
+        if(waitForPuInstances(v2MirrorPU, 1))
             throw new RuntimeException("Failed to deploy v2 mirror");
         try{
             v2Gigaspace = v2PU.getSpace().getGigaSpace();
@@ -129,8 +124,10 @@ public class Main {
     private static void loadV1DbToV2() throws ExecutionException, InterruptedException, TimeoutException {
         v2Gigaspace = admin.getProcessingUnits().waitFor("v2-service").waitForSpace().getGigaSpace();
         if(v2Gigaspace != null) {
-            MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
-            SpaceDataSourceLoadRequest spaceDataSourceLoadRequest = new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonDocumentSchemaAdapter()));
+            MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory =
+                    new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
+            SpaceDataSourceLoadRequest spaceDataSourceLoadRequest =
+                    new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonDocumentSchemaAdapter()));
             AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(spaceDataSourceLoadRequest);
             future.get(TIMEOUT, TimeUnit.SECONDS);
         }
@@ -140,10 +137,6 @@ public class Main {
         MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory = new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
         SpaceDataSourceLoadRequest spaceDataSourceLoadRequest = new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory);
         return spaceDataSourceLoadRequest.addTypeAdapter(new PersonDocumentSchemaAdapter()).addTypeAdapter(new PersonPojoSchemaAdapter());
-    }
-
-    private static void initAdmin(){
-
     }
 
     private static ProcessingUnit deployPu(String jarName){
@@ -178,9 +171,8 @@ public class Main {
     }
 
     private static boolean waitForPuInstances(ProcessingUnit pu, int numberOfInstances){
-//        System.out.println("number of pu " + pu.getName() + ": " + admin.getProcessingUnits().waitFor(pu.getName()).getInstances().length);
         if(pu != null)
-            return pu.waitFor(numberOfInstances, TIMEOUT, TimeUnit.SECONDS);
-        return false;
+            return !pu.waitFor(numberOfInstances, TIMEOUT, TimeUnit.SECONDS);
+        return true;
     }
 }
