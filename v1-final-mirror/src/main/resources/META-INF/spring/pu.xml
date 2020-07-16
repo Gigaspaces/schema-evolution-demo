@@ -53,7 +53,7 @@
     <bean id="kafkaSpaceSynchronizationEndpoint" class="org.openspaces.persistency.kafka.KafkaSpaceSynchronizationEndpointBeanFactory" >
         <property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>
         <property name="secondaryEndpoints">
-            <util:map map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.gigaspaces.sync.SpaceSynchronizationEndpoint">
+            <util:map value-type="com.gigaspaces.sync.SpaceSynchronizationEndpoint">
                 <entry key="${target.space.name}" value-ref="v2SpaceEndpoint"/>
             </util:map>
         </property>

@@ -27,7 +27,7 @@ public class Main {
     private final static String SEPARTAOR = File.separator;
     private final static String DEPLOY_DIR = System.getProperty("java.io.tmpdir") + SEPARTAOR + "schema-evolution-demo";
     private final static String LOOKUP_GROUP = "schema-demo";
-    private enum Action {undeployAll, deployV1, deployV2, undeployV1Mirror, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, loadDB}
+    private enum Action {undeployAll, deployV1, deployV2, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, loadDB}
 
     private static Admin admin;
     private static GridServiceManager gsm;
@@ -49,9 +49,6 @@ public class Main {
                     break;
                 case deployV2:
                     deployV2Service();
-                    break;
-                case undeployV1Mirror:
-                    undeployV1Mirror();
                     break;
                 case deployV1TemporaryMirror:
                     undeployV1Mirror();

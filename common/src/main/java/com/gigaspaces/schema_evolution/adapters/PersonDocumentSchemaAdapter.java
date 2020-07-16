@@ -4,6 +4,7 @@ import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
 import com.gigaspaces.document.SpaceDocument;
 import com.gigaspaces.metadata.SpaceTypeDescriptor;
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder;
+import com.gigaspaces.metadata.index.SpaceIndexType;
 
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.createRandomString;
@@ -25,12 +26,12 @@ public class PersonDocumentSchemaAdapter implements SpaceTypeSchemaAdapter {
 
     @Override
     public SpaceTypeDescriptor adaptTypeDescriptor(SpaceTypeDescriptor spaceTypeDescriptor) {
-        SpaceTypeDescriptorBuilder builder = new SpaceTypeDescriptorBuilder(spaceTypeDescriptor.getTypeName());
-        builder.idProperty(spaceTypeDescriptor.getIdPropertyName(), spaceTypeDescriptor.isAutoGenerateId());
-        builder.routingProperty(spaceTypeDescriptor.getRoutingPropertyName());
-        spaceTypeDescriptor.getIndexes().values().forEach(builder::addIndex);
-        builder.addFixedProperty("fixedPropertyField", Integer.class);
-        return spaceTypeDescriptor;
+        return new SpaceTypeDescriptorBuilder(PERSON_DOCUMENT)
+                .idProperty("id", false)
+                .routingProperty("routing")
+                .addPropertyIndex("created", SpaceIndexType.EQUAL)
+                .addFixedProperty("fixedPropertyField", Integer.class)
+                .create();
     }
 
     @Override
