@@ -27,7 +27,7 @@ public class Main {
     private final static String SEPARTAOR = File.separator;
     private final static String DEPLOY_DIR = System.getProperty("java.io.tmpdir") + SEPARTAOR + "schema-evolution-demo";
     private final static String LOOKUP_GROUP = "schema-demo";
-    private enum Action {undeployAll, deployV1, deployV2, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, loadDB}
+    private enum Action {undeployAll, deployV1, deployV2, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, undeployFeeder, loadDB}
 
     private static Admin admin;
     private static GridServiceManager gsm;
@@ -60,6 +60,9 @@ public class Main {
                 case deployFeeder:
                     deployFeeder(feederMode);
                     break;
+                case undeployFeeder:
+                    undeployPu("feeder");
+                    break;
                 case loadDB:
                     try {
                         loadV1DbToV2();
@@ -77,7 +80,6 @@ public class Main {
     }
 
     private static void undeployAllServices() {
-        undeployPu("feeder");
         undeployPu("v1-service");
         undeployPu("v1-mirror");
         undeployPu("v2-service");
@@ -91,7 +93,7 @@ public class Main {
     private static void deployV1Service(){
         ProcessingUnit v1PU = deployPu("v1-service");
         ProcessingUnit v1MirrorPU = deployPu("v1-mirror");
-        if(waitForPuInstances(v1PU, 4))
+        if(waitForPuInstances(v1PU, 2))
             throw new RuntimeException("Failed to deploy v1 pu");
         if(waitForPuInstances(v1MirrorPU, 1))
             throw new RuntimeException("Failed to deploy v1 mirror");
@@ -100,7 +102,7 @@ public class Main {
     private static void deployV2Service(){
         ProcessingUnit v2PU = deployPu("v2-service");
         ProcessingUnit v2MirrorPU = deployPu("v2-mirror");
-        if(waitForPuInstances(v2PU, 4))
+        if(waitForPuInstances(v2PU, 2))
             throw new RuntimeException("Failed to deploy v2 pu");
         if(waitForPuInstances(v2MirrorPU, 1))
             throw new RuntimeException("Failed to deploy v2 mirror");
@@ -117,7 +119,7 @@ public class Main {
 
     private static void deployFeeder(String feedMode){
         Map<String, String> contextProperties = new HashMap<>();
-        contextProperties.put("feedMode", feedMode);
+        contextProperties.put("feederMode", feedMode);
         deployPu("feeder", contextProperties);
     }
 
@@ -127,7 +129,7 @@ public class Main {
             MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory =
                     new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
             SpaceDataSourceLoadRequest spaceDataSourceLoadRequest =
-                    new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonDocumentSchemaAdapter()));
+                    new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonPojoSchemaAdapter()));
             AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(spaceDataSourceLoadRequest);
             future.get(TIMEOUT, TimeUnit.SECONDS);
         }

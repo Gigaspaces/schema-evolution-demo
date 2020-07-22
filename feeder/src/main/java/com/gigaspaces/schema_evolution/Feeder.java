@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,11 +36,8 @@ public class Feeder {
     @PostConstruct
     public void runFeed() throws Exception {
         logger.info("Initialized: connected to space {}", gigaSpace.getSpaceName());
-        gigaSpace.getTypeManager().registerTypeDescriptor(getV1PersonTypeDescriptor());
-        switch (feederMode) {
-            case write:
-                future = executorService.scheduleAtFixedRate(new WriteTask(), 5000, 5000, TimeUnit.MILLISECONDS);
-        }
+//        gigaSpace.getTypeManager().registerTypeDescriptor(getV1PersonTypeDescriptor());
+        future = executorService.scheduleAtFixedRate(new WriteTask(), 5000, 5000, TimeUnit.MILLISECONDS);
     }
 
     @PreDestroy
@@ -91,11 +89,34 @@ public class Feeder {
     }
 
     private class WriteTask implements Runnable{
-
         @Override
         public void run() {
-            gigaSpace.writeMultiple(createPersonDocumentArray());
-            logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+//            SpaceDocument[] persons = createPersonDocumentArray();
+            Person[] persons = createPersonArray();
+            switch (feederMode) {
+                case write:
+                    gigaSpace.writeMultiple(persons);
+                    logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+                    break;
+                case update:
+                    gigaSpace.writeMultiple(persons);
+                    logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+//                    Arrays.stream(persons).forEach(person -> person.setProperty("removedField", person.getProperty("removedField") + "_MODIFIED"));
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    persons = Arrays.stream(gigaSpace.readMultiple(new Person())).map(person -> person.setTypeChangeField(person.getTypeChangeField().toUpperCase())).toArray(Person[]::new);
+                    gigaSpace.writeMultiple(persons);
+                    logger.info("Feeder updated " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+                    break;
+                case take:
+                    gigaSpace.writeMultiple(persons);
+                    logger.info("Feeder wrote " + batchSize + " "  + PERSON_DOCUMENT + "s.");
+                    logger.info("Feeder removed " + gigaSpace.takeMultiple(null, 50).length + " "  + PERSON_DOCUMENT + "s from space.");
+                    break;
+            }
             batchCounter.incrementAndGet();
         }
     }

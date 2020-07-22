@@ -6,19 +6,19 @@ import java.util.Date;
 
 @SpaceClass
 public class Person {
-    private Integer id;
+    private String id;
     private Integer routing;
     private Date created;
     private String typeChangeField;
 
     public Person() {
     }
-    @SpaceId
-    public Integer getId() {
+    @SpaceId(autoGenerate = true)
+    public String getId() {
         return id;
     }
 
-    public Person setId(Integer id) {
+    public Person setId(String id) {
         this.id = id;
         return this;
     }

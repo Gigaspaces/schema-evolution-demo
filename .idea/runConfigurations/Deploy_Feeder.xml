@@ -2,7 +2,7 @@
   <configuration default="false" name="Deploy Feeder" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.gigaspaces.schema_evolution.Main" />
     <module name="common" />
-    <option name="PROGRAM_PARAMETERS" value="deployFeeder" />
+    <option name="PROGRAM_PARAMETERS" value="deployFeeder write" />
     <option name="VM_PARAMETERS" value="-Djava.rmi.server.hostname=127.0.1.1" />
     <extension name="coverage">
       <pattern>

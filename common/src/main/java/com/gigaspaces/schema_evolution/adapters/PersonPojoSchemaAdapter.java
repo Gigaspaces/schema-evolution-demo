@@ -4,6 +4,9 @@ import com.gigaspaces.datasource.SpaceTypeSchemaAdapter;
 import com.gigaspaces.document.SpaceDocument;
 import com.gigaspaces.metadata.SpaceTypeDescriptor;
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder;
+import com.gigaspaces.metadata.index.SpaceIndexType;
+
+import java.util.Date;
 
 import static com.gigaspaces.schema_evolution.util.DemoUtils.PERSON_DOCUMENT;
 import static com.gigaspaces.schema_evolution.util.DemoUtils.createRandomString;
@@ -16,19 +19,22 @@ public class PersonPojoSchemaAdapter implements SpaceTypeSchemaAdapter {
     @Override
     public SpaceDocument adaptEntry(SpaceDocument spaceDocument) {
         spaceDocument.setProperty("newField", createRandomString(8));
-        spaceDocument.setProperty("calculatedField", spaceDocument.getProperty("typeChangeField").toString() + " " + spaceDocument.getProperty("newField"));
-        spaceDocument.setProperty("typeChangeField", spaceDocument.getProperty("typeChangeField").toString().length());
+        spaceDocument.setProperty("calculatedField", spaceDocument.<String>getProperty("typeChangeField") + " " + spaceDocument.getProperty("newField"));
+        spaceDocument.setProperty("typeChangeField", spaceDocument.<String>getProperty("typeChangeField").length());
         return spaceDocument;
     }
 
     @Override
     public SpaceTypeDescriptor adaptTypeDescriptor(SpaceTypeDescriptor spaceTypeDescriptor) {
-        try {
-            Class clazz = Class.forName(spaceTypeDescriptor.getTypeName());
-            return new SpaceTypeDescriptorBuilder(clazz, null).create();
-        } catch (ClassNotFoundException e) {
-            return spaceTypeDescriptor;
-        }
+        return new SpaceTypeDescriptorBuilder(PERSON_DOCUMENT)
+                .idProperty("id", false)
+                .routingProperty("routing")
+                .addPropertyIndex("created", SpaceIndexType.EQUAL)
+                .addFixedProperty("created", Date.class)
+                .addFixedProperty("typeChangeField", Integer.class)
+                .addFixedProperty("newField", String.class)
+                .addFixedProperty("calculatedField", String.class)
+                .create();
     }
 
     @Override
