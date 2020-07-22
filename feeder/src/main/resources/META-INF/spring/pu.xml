@@ -17,12 +17,14 @@
             <props>
                 <prop key="spaceName">v1-space</prop>
                 <prop key="batchSize">1000</prop>
+                <prop key="feederMode">write</prop>
+
             </props>
         </property>
     </bean>
 
     <bean id="feeder" class="com.gigaspaces.schema_evolution.Feeder">
-        <property name="feederMode" value="write"/>
+        <property name="feederMode" value="${feederMode}"/>
     </bean>
 
     <!-- Defines an embedded space -->
