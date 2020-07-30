@@ -20,7 +20,7 @@
         <property name="db" value="v1-db" />
         <property name="config">
             <bean id="config" class="com.mongodb.MongoClient">
-                <constructor-arg value="127.0.1.1" type="java.lang.String" />
+                <constructor-arg value="mongodb.service.consul" type="java.lang.String" />
                 <constructor-arg value="27017" type="int" />
             </bean>
         </property>
@@ -34,7 +34,7 @@
     <!--
         A bean representing a space (an IJSpace implementation).
     -->
-    <os-core:space id="v1-space" url="/./v1-space?groups=schema-demo" schema="persistent" mirror="true" space-data-source="v1SpaceDataSource">
+    <os-core:space id="v1-space" url="/./v1-space?groups=xap-15.5.0" schema="persistent" mirror="true" space-data-source="v1SpaceDataSource">
     </os-core:space>
 
     <!--

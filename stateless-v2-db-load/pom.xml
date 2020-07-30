@@ -9,14 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>v2-service</artifactId>
+    <artifactId>stateless-v2-db-load</artifactId>
 
     <build>
-        <finalName>v2-service</finalName>
+        <finalName>stateless-v2-db-load</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -26,12 +27,6 @@
                         </goals>
                         <configuration>
                             <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.kafka</groupId>
-                                    <artifactId>kafka-clients</artifactId>
-                                    <version>${kafka.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
                                 <artifactItem>
                                     <groupId>org.mongodb</groupId>
                                     <artifactId>mongo-java-driver</artifactId>
@@ -56,12 +51,6 @@
                                     <version>${gs.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.gigaspaces</groupId>
-                                    <artifactId>xap-kafka</artifactId>
-                                    <version>${gs.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
@@ -73,4 +62,12 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.gigaspaces</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

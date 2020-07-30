@@ -28,7 +28,7 @@
     </bean>
 
     <!-- Defines an embedded space -->
-    <os-core:space-proxy id="space" space-name="${spaceName}" lookup-groups="schema-demo">
+    <os-core:space-proxy id="space" space-name="${spaceName}" lookup-groups="xap-15.5.0">
         <!-- Optional: additionan space configuration goes here -->
     </os-core:space-proxy>
 

@@ -38,7 +38,10 @@ public class FeederUtils {
     }
 
     public static Person createV1PersonPojo(int id){
-        return new Person().setRouting(getNextInt(100000)).setCreated(new Date(System.currentTimeMillis())).setTypeChangeField(createRandomString(getNextInt(10)));
+        return new Person()
+                .setRouting(getNextInt(100000))
+                .setCreated(new Date(System.currentTimeMillis()))
+                .setTypeChangeField(createRandomString(getNextInt(10)));
     }
 
     private static int getNextInt(int bound){

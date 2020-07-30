@@ -4,6 +4,7 @@ import com.gigaspaces.async.AsyncFuture;
 import com.gigaspaces.datasource.SpaceDataSourceLoadRequest;
 import com.gigaspaces.datasource.SpaceDataSourceLoadResult;
 import com.gigaspaces.persistency.MongoSpaceDataSourceFactory;
+import com.gigaspaces.query.IdsQuery;
 import com.gigaspaces.schema_evolution.adapters.PersonDocumentSchemaAdapter;
 import com.gigaspaces.schema_evolution.adapters.PersonPojoSchemaAdapter;
 import org.apache.commons.io.FilenameUtils;
@@ -26,7 +27,7 @@ public class Main {
     private final static long TIMEOUT = 60;
     private final static String SEPARTAOR = File.separator;
     private final static String DEPLOY_DIR = System.getProperty("java.io.tmpdir") + SEPARTAOR + "schema-evolution-demo";
-    private final static String LOOKUP_GROUP = "schema-demo";
+    private final static String LOOKUP_GROUP = "xap-15.5.0";
     private enum Action {undeployAll, deployV1, deployV2, deployV1TemporaryMirror, deployV1FinalMirror, deployFeeder, undeployFeeder, loadDB}
 
     private static Admin admin;
@@ -64,11 +65,7 @@ public class Main {
                     undeployPu("feeder");
                     break;
                 case loadDB:
-                    try {
-                        loadV1DbToV2();
-                    } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    loadV1DbToV2();
                     break;
             }
         }catch (Exception e){
@@ -123,16 +120,8 @@ public class Main {
         deployPu("feeder", contextProperties);
     }
 
-    private static void loadV1DbToV2() throws ExecutionException, InterruptedException, TimeoutException {
-        v2Gigaspace = admin.getProcessingUnits().waitFor("v2-service").waitForSpace().getGigaSpace();
-        if(v2Gigaspace != null) {
-            MongoSpaceDataSourceFactory mongoSpaceDataSourceFactory =
-                    new MongoSpaceDataSourceFactory().host("127.0.1.1").port(27017).db("v1-db");
-            SpaceDataSourceLoadRequest spaceDataSourceLoadRequest =
-                    new SpaceDataSourceLoadRequest(mongoSpaceDataSourceFactory, Collections.singleton(new PersonPojoSchemaAdapter()));
-            AsyncFuture<SpaceDataSourceLoadResult> future = v2Gigaspace.asyncLoad(spaceDataSourceLoadRequest);
-            future.get(TIMEOUT, TimeUnit.SECONDS);
-        }
+    private static void loadV1DbToV2()  {
+        deployPu("stateless-v2-db-load");
     }
 
     public static SpaceDataSourceLoadRequest createDataLoadRequest(){

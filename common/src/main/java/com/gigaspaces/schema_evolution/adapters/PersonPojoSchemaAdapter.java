@@ -26,10 +26,12 @@ public class PersonPojoSchemaAdapter implements SpaceTypeSchemaAdapter {
 
     @Override
     public SpaceTypeDescriptor adaptTypeDescriptor(SpaceTypeDescriptor spaceTypeDescriptor) {
-        return new SpaceTypeDescriptorBuilder(PERSON_DOCUMENT)
-                .idProperty("id", false)
+        return new SpaceTypeDescriptorBuilder(spaceTypeDescriptor.getTypeName())
+                .idProperty("id", true)
                 .routingProperty("routing")
                 .addPropertyIndex("created", SpaceIndexType.EQUAL)
+                .addFixedProperty("id", String.class)
+                .addFixedProperty("routing", Integer.class)
                 .addFixedProperty("created", Date.class)
                 .addFixedProperty("typeChangeField", Integer.class)
                 .addFixedProperty("newField", String.class)

@@ -10,7 +10,7 @@
 		<property name="properties">
 			<props>
 				<prop key="space.name">v2-space</prop>
-				<prop key="lookup.groups">schema-demo</prop>
+				<prop key="lookup.groups">xap-15.5.0</prop>
 			</props>
 		</property>
 	</bean>
@@ -26,7 +26,7 @@
 		<property name="db" value="v2-db" />
 		<property name="config">
 			<bean id="config" class="com.mongodb.MongoClient">
-				<constructor-arg value="127.0.1.1" type="java.lang.String" />
+				<constructor-arg value="mongodb.service.consul" type="java.lang.String" />
 				<constructor-arg value="27017" type="int" />
 			</bean>
 		</property>
@@ -39,7 +39,7 @@
 
 	<bean id="kafkaSpaceSynchronizationEndpoint" class="org.openspaces.persistency.kafka.KafkaSpaceSynchronizationEndpointBeanFactory" >
 		<property name="primaryEndpoint" ref="mongoSpaceSyncEndpoint"/>
-		<property name="kafkaBootstrapServers" value="127.0.1.1:9092"/>
+		<property name="kafkaBootstrapServers" value="kafka-0.service.consul:9092"/>
 		<property name="topic" value="${space.name}-topic"/>
 	</bean>
 </beans>
