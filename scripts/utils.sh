@@ -3,14 +3,14 @@ set -e
 
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/env.sh
-SERVICES=(v1-service v2-service v1-mirror v2-mirror v1-feeder v2-load-v1-db)
+SERVICES=(v1-service v2-service v1-mirror v2-mirror v1-feeder)
 function deploy_space {
   local puName="$1"
   local resource="$2"
-  echo "Deploying service $puName.."
+  echo -e "Deploying service $puName..\n"
   local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u adam:${GS_TOKEN} -d "{ \
      \"name\": \"${puName}\", \
-     \"resource\": \"https://github.com/alonshoham/schema-evolution-demo/raw/master/pus/${resource}\", \
+     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/${resource}\", \
      \"topology\": { \
        \"schema\": \"partitioned\", \
        \"partitions\": 1, \
@@ -18,45 +18,44 @@ function deploy_space {
      }
    }" https://${GS_MANAGER_IP}:8090/v2/pus | jq .)
   assertRequest $requestId
+  echo -e "Finished deployment of service $puName...\n"
 }
 
 function deploy_stateless_pu {
     local puName="$1"
     local resource="$2"
-    echo "Deploying service $puName.."
+    echo -e "Deploying service $puName...\n"
     local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u adam:${GS_TOKEN} -d "{ \
      \"name\": \"$puName\", \
-     \"resource\": \"https://github.com/alonshoham/schema-evolution-demo/raw/master/pus/$resource\", \
+     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/$resource\", \
      \"topology\": { \
        \"instances\": 1 \
      }
    }" https://${GS_MANAGER_IP}:8090/v2/pus | jq .)
-    echo "requestId: $requestId"
     assertRequest $requestId
+    echo -e "Finished deployment of service $puName...\n"
 }
 
 function undeploy_pu {
     local puName="$1"
+    echo -e "Undeploying service $puName...\n"
     local requestId=$(curl -X DELETE --insecure --silent --header 'Accept: text/plain' -u adam:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/pus/$puName | jq .)
-    echo "requestId: $requestId"
     assertRequest $requestId
+    echo -e "Finished undeployment of service $puName...\n"
 }
 
 function assertRequest {
   local requestId="$1"
   local requestStatus
-  local count=0
-  echo "asserting requestId $requestId"
   while [[ $requestStatus != \"successful\" ]]; do
     requestStatus=$(curl -X GET --insecure --silent --header 'Accept: text/plain' -u adam:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/requests/$requestId | jq '.status')
     sleep 1
-    count=$[$count+1]
   done
-  if [[ $requestStatus == \"successful\" ]]; then
-    echo "Request $requestId was successful"
-  else
-    echo "Request $requestId failed"
-  fi
+#  if [[ $requestStatus == \"successful\" ]]; then
+#    echo "Request $requestId was successful"
+#  else
+#    echo "Request $requestId failed"
+#  fi
 }
 
 function undeploy_all {
