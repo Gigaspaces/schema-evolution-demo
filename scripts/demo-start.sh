@@ -20,7 +20,7 @@ The first step is deployment of the following services:\n
   2. v2 service and mirror\n
   3. v1 feeder, that writes old schema data to v1\n"
 read -rp "To start services deployment, press enter: "
-echo_red "\nThis step might take a while...\n"
+echo_green "\nThis step might take a while...\n"
 deploy_space "v1-service" "v1-service.jar"
 deploy_space "v2-service" "v2-service.jar"
 deploy_stateless_pu "v1-mirror" "v1-mirror.jar"
