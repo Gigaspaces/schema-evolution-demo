@@ -42,8 +42,8 @@ NOTICE: the data written to v2 is adapted to the new v2 schema:\n
   - Field typeChangeField type is changed from String to Integer.\n
   - Fields newField and calculatedField are added\n"
 
-read  -rp "To run the load v1 db v2 step, press enter: "
-echo -e "\nRunning v1 db load to v2 service...\n"
+read  -rp "To run this step, press enter: "
+echo -e "\nRunning v1 db load to v2...\n"
 undeploy_pu "v1-mirror"
 deploy_stateless_pu "v1-mirror" "v1-temporary-mirror.jar"
 echo -e "Deployed the new v1 mirror service, persistence to v1 mongodb database will be paused.\n"
@@ -53,13 +53,13 @@ echo -e "v2 load v1 db step is done, you can view the changes in https://${GS_MA
 read  -rp "To move to the next step, press enter: "
 echo -e "\n************************************************\n
 The next and final step in th demo is redirection of v1 traffic to v2\n
-  - The final version v1 mirror is deployed\n
+  - The final version of v1 mirror is deployed\n
   - All v1 traffic (i.e. written data) is replicated and adapted to v2\n
   - This v1 mirror is responsible for this functionality.\n"
 
 read -rp "To run the next step - v1 traffic redirection to v2, press enter: "
 echo -e "\nRunning v1 to v2 service traffic redirection ...\n"
-undeploy_pu v1-mirror
+undeploy_pu "v1-mirror"
 deploy_stateless_pu "v1-mirror" "v1-final-mirror.jar"
 echo -e "Final step is done, you can view the changes in https://${GS_MANAGER_IP}:8090/spaces\n"
 read -rp "To exit the demo, press enter: "
