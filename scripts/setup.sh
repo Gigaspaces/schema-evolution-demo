@@ -8,11 +8,10 @@ if [ -f ${DIRNAME}/env.sh ]; then
 fi
 echo -e "#!/usr/bin/env bash" >> ${DIRNAME}/env.sh
 echo -e "set -e" >> ${DIRNAME}/env.sh
-echo "export TIMEOUT=120" >> ${DIRNAME}/env.sh
 echo "Welcome to demo setup"
-read -p "Enter your nomad token: "
+read -rp "Enter your nomad token: "
 echo -e "export GS_TOKEN=${REPLY}" >> ${DIRNAME}/env.sh
-read -p "Enter GigaSpaces Manager docker ip: "
+read -rp "Enter GigaSpaces Manager docker ip: "
 echo -e "export GS_MANAGER_IP=${REPLY}" >> ${DIRNAME}/env.sh
 chmod +x ${DIRNAME}/env.sh
 echo "All set! to start, execute the demo-start.sh script"

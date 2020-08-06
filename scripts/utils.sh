@@ -64,6 +64,18 @@ function undeploy_all {
     done
 }
 
+function echo_green {
+  local GREEN='\033[0;32m'
+  local message="$1"
+  echo -e "${GREEN}$message"
+}
+
+function echo_red {
+  local GREEN='\033[0;31m'
+  local message="$1"
+  echo -e "${GREEN}$message"
+}
+
 
 
 
