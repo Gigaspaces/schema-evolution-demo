@@ -8,7 +8,7 @@ function deploy_space {
   local puName="$1"
   local resource="$2"
   echo -e "Deploying service $puName..\n"
-  local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u adam:${GS_TOKEN} -d "{ \
+  local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} -d "{ \
      \"name\": \"${puName}\", \
      \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/${resource}\", \
      \"topology\": { \
@@ -25,7 +25,7 @@ function deploy_stateless_pu {
     local puName="$1"
     local resource="$2"
     echo -e "Deploying service $puName...\n"
-    local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u adam:${GS_TOKEN} -d "{ \
+    local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} -d "{ \
      \"name\": \"$puName\", \
      \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/$resource\", \
      \"topology\": { \
@@ -39,7 +39,7 @@ function deploy_stateless_pu {
 function undeploy_pu {
     local puName="$1"
     echo -e "Undeploying service $puName...\n"
-    local requestId=$(curl -X DELETE --insecure --silent --header 'Accept: text/plain' -u adam:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/pus/$puName | jq .)
+    local requestId=$(curl -X DELETE --insecure --silent --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/pus/$puName | jq .)
     assertRequest $requestId
     echo -e "Finished undeployment of service $puName...\n"
 }
@@ -48,7 +48,7 @@ function assertRequest {
   local requestId="$1"
   local requestStatus
   while [[ $requestStatus != \"successful\" ]]; do
-    requestStatus=$(curl -X GET --insecure --silent --header 'Accept: text/plain' -u adam:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/requests/$requestId | jq '.status')
+    requestStatus=$(curl -X GET --insecure --silent --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} https://${GS_MANAGER_IP}:8090/v2/requests/$requestId | jq '.status')
     sleep 1
   done
 #  if [[ $requestStatus == \"successful\" ]]; then
