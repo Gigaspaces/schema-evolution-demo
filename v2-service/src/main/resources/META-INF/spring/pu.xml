@@ -36,7 +36,7 @@
     <!--
         A bean representing a space (an IJSpace implementation).
     -->
-    <os-core:space id="v2-space" url="/./v2-space?groups=xap-15.5.0" schema="persistent" mirror="true"
+    <os-core:space id="v2-space" url="/./v2-space?groups=xap-15.8.0" schema="persistent" mirror="true"
                    space-data-source="v2SpaceDataSource">
         <os-core:properties>
             <props>
@@ -44,7 +44,7 @@
                 <prop key="cluster-config.cache-loader.central-data-source">true</prop>
                 <prop key="cluster-config.mirror-service.supports-partial-update">true</prop>
                 <prop key="cluster-config.mirror-service.url">
-                    jini://*/v2-mirror-service_container/v2-mirror-service?groups=xap-15.5.0
+                    jini://*/v2-mirror-service_container/v2-mirror-service?groups=xap-15.8.0
                 </prop>
             </props>
         </os-core:properties>

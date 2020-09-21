@@ -16,7 +16,7 @@
             <props>
                 <prop key="space.name">v1-space</prop>
                 <prop key="target.space.name">v2-space</prop>
-                <prop key="lookup.groups">xap-15.5.0</prop>
+                <prop key="lookup.groups">xap-15.8.0</prop>
             </props>
         </property>
     </bean>

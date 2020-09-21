@@ -20,7 +20,7 @@
         <module>v2-load-v1-db</module>
     </modules>
     <properties>
-        <gs.version>15.5.0-SNAPSHOT</gs.version>
+        <gs.version>15.8.0-SNAPSHOT</gs.version>
         <kafka.version>2.5.0</kafka.version>
     </properties>
 

@@ -23,7 +23,7 @@
         <property name="properties">
             <props>
                 <prop key="spaceName">v2-space</prop>
-                <prop key="lookupGroups">xap-15.5.0</prop>
+                <prop key="lookupGroups">xap-15.8.0</prop>
                 <prop key="mongoDbIp">mongodb.service.consul</prop>
                 <prop key="mongoDbPort">27017</prop>
                 <prop key="dbName">v1-db</prop>

@@ -28,7 +28,7 @@ public class Feeder {
     private GigaSpace gigaSpace;
     private int batchSize = BATCH_SIZE;
     private EntryType entryType;
-    private FeederMode feederMode;
+    private FeederMode feederMode = FeederMode.write;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
     private AtomicInteger batchCounter = new AtomicInteger(0);

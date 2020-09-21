@@ -34,7 +34,7 @@
     <!--
         A bean representing a space (an IJSpace implementation).
     -->
-    <os-core:space id="v1-space" url="/./v1-space?groups=xap-15.5.0" schema="persistent" mirror="true" space-data-source="v1SpaceDataSource">
+    <os-core:space id="v1-space" url="/./v1-space?groups=xap-15.8.0" schema="persistent" mirror="true" space-data-source="v1SpaceDataSource">
     </os-core:space>
 
     <!--

@@ -10,7 +10,7 @@ function deploy_space {
   echo -e "Deploying service $puName..\n"
   local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} -d "{ \
      \"name\": \"${puName}\", \
-     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/${resource}\", \
+     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/alon-kafka-bug/pus/${resource}\", \
      \"topology\": { \
        \"schema\": \"partitioned\", \
        \"partitions\": 1, \
@@ -27,7 +27,7 @@ function deploy_stateless_pu {
     echo -e "Deploying service $puName...\n"
     local requestId=$(curl -X POST --insecure --silent --header 'Content-Type: application/json' --header 'Accept: text/plain' -u gs-admin:${GS_TOKEN} -d "{ \
      \"name\": \"$puName\", \
-     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/master/pus/$resource\", \
+     \"resource\": \"https://github.com/Gigaspaces/schema-evolution-demo/raw/alon-kafka-bug/pus/$resource\", \
      \"topology\": { \
        \"instances\": 1 \
      }
